@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+mojo-venv
 
 # C extensions
 *.so
