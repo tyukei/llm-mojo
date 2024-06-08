@@ -7,26 +7,27 @@ fn chat_response() -> None:
         var transformers = Python.import_module("transformers")
         var torch = Python.import_module("torch")
         var builtins = Python.import_module("builtins")
-        var model_name = "gpt2"
-        var tokenizer = transformers.GPT2Tokenizer.from_pretrained(model_name)
-        var model = transformers.GPT2LMHeadModel.from_pretrained(model_name)
+        var model_name = "t5-small"
+        var tokenizer = transformers.T5Tokenizer.from_pretrained(model_name)
+        var model = transformers.T5ForConditionalGeneration.from_pretrained(model_name)
 
         # チャットボット用のプロンプト
         var user_input: String = builtins.input("You: ")
         var prompt: String = "The following is a conversation with an AI assistant. \n\nUser: " + user_input + "\nAI:"
+
+        
         # トークン化
         var inputs = tokenizer(prompt, return_tensors="pt")
-        var attention_mask = torch.ones_like(inputs.input_ids)
 
         # モデルを使用してテキストを生成
-        var outputs = model.generate(inputs.input_ids, attention_mask=attention_mask, max_length=150, pad_token_id=tokenizer.eos_token_id)
+        var outputs = model.generate(inputs.input_ids, max_length=150)
         # 生成されたトークンをテキストにデコード
         var generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        # 最初の「AI:」の後のテキストを抽出
         var response = generated_text.split("AI:")[1].split("User:")[0].strip()
         print("AI:", response)
     except e:
         print("An error occurred:", e)
+
 fn main() -> None:
     try:
         var time_function = Python.import_module("time")
@@ -37,3 +38,4 @@ fn main() -> None:
         print("Chatbot response took", seconds, "seconds to run")
     except e:
         print("An error occurred:", e)
+
